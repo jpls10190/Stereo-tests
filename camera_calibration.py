@@ -2,9 +2,19 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+# RESIZE IMAGE 
+def resize_img(img, width, height):
+    scale_width = width / img.shape[1]
+    scale_height = height / img.shape[0]
+    scale = min(scale_width, scale_height)
+    window_width = int(img.shape[1] * scale)
+    window_height = int(img.shape[0] * scale)
+    img = cv2.resize(img, (window_width, window_height))
+    return img
+
 # Set the path to the images captured by the left and right cameras
-pathL = "./data/stereoL/"
-pathR = "./data/stereoR/"
+pathL = "./img/stereoL/"
+pathR = "./img/stereoR/"
  
 # Termination criteria for refining the detected corners
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -18,10 +28,10 @@ img_ptsR = []
 obj_pts = []
  
 for i in tqdm(range(1,12)):
- imgL = cv2.imread(pathL+"img%d.png"%i)
- imgR = cv2.imread(pathR+"img%d.png"%i)
- imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)
- imgR_gray = cv2.imread(pathR+"img%d.png"%i,0)
+ imgL = cv2.imread(pathL+"img%d.jpg"%i)
+ imgR = cv2.imread(pathR+"img%d.jpg"%i)
+ imgL_gray = cv2.imread(pathL+"img%d.jpg"%i,0)
+ imgR_gray = cv2.imread(pathR+"img%d.jpg"%i,0)
  
  outputL = imgL.copy()
  outputR = imgR.copy()
@@ -35,8 +45,8 @@ for i in tqdm(range(1,12)):
   cv2.cornerSubPix(imgL_gray,cornersL,(11,11),(-1,-1),criteria)
   cv2.drawChessboardCorners(outputR,(9,6),cornersR,retR)
   cv2.drawChessboardCorners(outputL,(9,6),cornersL,retL)
-  cv2.imshow('cornersR',outputR)
-  cv2.imshow('cornersL',outputL)
+  cv2.imshow('cornersR',resize_img(outputR,900,900))
+  cv2.imshow('cornersL',resize_img(outputL,900,900))
   cv2.waitKey(0)
  
   img_ptsL.append(cornersL)
